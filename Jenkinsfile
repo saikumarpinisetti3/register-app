@@ -9,7 +9,7 @@ pipeline {
             IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
 	    JENKINS_API_TOKEN = credentials("sonar-api")
     }
-
+	stages{
         stage('Checkout from SCM'){
                 steps {
                     git branch: 'main', url: 'https://github.com/saikumarpinisetti3/register-app.git'
@@ -96,4 +96,5 @@ pipeline {
                 }
             }
        }
+	}
 }
