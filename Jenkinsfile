@@ -9,12 +9,6 @@ pipeline {
             IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
 	    JENKINS_API_TOKEN = credentials("sonar-api")
     }
-    stages{
-        stage("Cleanup Workspace"){
-                steps {
-                cleanWs()
-                }
-        }
 
         stage("Checkout from SCM"){
                 steps {
