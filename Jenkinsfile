@@ -10,20 +10,20 @@ pipeline {
 	    JENKINS_API_TOKEN = credentials("sonar-api")
     }
 
-        stage("Checkout from SCM"){
+        stage('Checkout from SCM'){
                 steps {
                     git branch: 'main', url: 'https://github.com/saikumarpinisetti3/register-app.git'
                 }
         }
 
-        stage("Build Application"){
+        stage('Build Application'){
             steps {
                 sh "mvn clean package"
             }
 
        }
 
-       stage("Test Application"){
+       stage('Test Application'){
            steps {
                  sh "mvn test"
            }
@@ -36,7 +36,7 @@ pipeline {
             }
         }
 
-       stage("SonarQube Analysis"){
+       stage('SonarQube Analysis'){
            steps {
 	           script {
 		        withSonarQubeEnv(credentialsId: 'sonar-api') { 
@@ -46,7 +46,7 @@ pipeline {
            }
        }
 
-       stage("Quality Gate"){
+       stage('Quality Gate'){
            steps {
                script {
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api'
@@ -55,7 +55,7 @@ pipeline {
 
         }
 
-        stage("Build & Push Docker Image") {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
                     docker.withRegistry('',DOCKER_PASS) {
@@ -89,7 +89,7 @@ pipeline {
           }
        }
 
-       stage("Trigger CD Pipeline") {
+       stage('Trigger CD Pipeline') {
             steps {
                 script {
                     sh "curl -v -k --user admin:${sonar-api} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
