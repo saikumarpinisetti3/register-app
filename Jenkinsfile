@@ -4,7 +4,7 @@ pipeline {
 	    APP_NAME = "register-app-pipeline"
             RELEASE = "1.0.0"
             DOCKER_USER = "saikumarpinisetti"
-            DOCKER_PASS = "Supershot#143"
+            DOCKER_PASS = credentials('your-docker-credentials-id')
             IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
             IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
 	    JENKINS_API_TOKEN = credentials("Devops")
