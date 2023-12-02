@@ -46,12 +46,11 @@ pipeline {
 	           }	
            }
        }
-
-       stage('Quality Gate'){
+stage("Quality Gate"){
            steps {
                script {
                     waitForQualityGate abortPipeline: false, credentialsId: 'Devops'
-                }
+                }	
             }
 
         }
