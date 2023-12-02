@@ -74,7 +74,7 @@ pipeline {
             steps{
                 script{
 
-                   sh 'trivyimage saikumarpinisetti/register-app-pipeline:latest > ss.txt'
+                   sh 'trivy image saikumarpinisetti/register-app-pipeline:latest > ss.txt'
                    sh 'cat ss.txt'
                 }
             }
