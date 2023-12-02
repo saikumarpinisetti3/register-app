@@ -50,8 +50,8 @@ pipeline {
     steps {
         script {
 	sh 'docker image build -t $APP_NAME:v1.$BUILD_ID .' 
-	 sh 'docker image tag $APP_NAME:v1.$BUILD_ID saikumarpinisetti/$APP_NAME:v1.$BUILD_ID'
-	sh 'docker image tag $APP_NAME:v1.$BUILD_ID saikumarpinisetti/$APP_NAME:latest'
+	 sh 'docker image tag $APP_NAME:v1.$BUILD_ID $DOCKER_USER/$APP_NAME:v1.$BUILD_ID'
+	sh 'docker image tag $APP_NAME:v1.$BUILD_ID $DOCKER_USER/$APP_NAME:latest'
         }
     }
 }
