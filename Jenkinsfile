@@ -74,7 +74,7 @@ pipeline {
             steps{
                 script{
 
-                   sh 'trivy image saikumarpinisetti/register-app-pipeline:latest > ss.txt'
+                   sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ashfaque9x/register-app-pipeline:latest > ss.txt'
                    sh 'cat ss.txt'
                 }
             }
