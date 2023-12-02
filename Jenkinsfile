@@ -46,15 +46,6 @@ pipeline {
 	           }	
            }
        }
-		stage('qualitygate'){
-            steps{
-                
-                    withSonarQubeEnv('sonarapi'){
-                script{
-                    sh "waitForQualityGate abortPipeline: false, credentialsId: 'Devops'"
-                }
-            }
-        }
 
        stage('Quality Gate'){
            steps {
