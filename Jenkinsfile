@@ -62,7 +62,7 @@ pipeline {
               script{
                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
                      
-                     sh 'docker login -u $DOCKER_USER -p ${dockerhub_passwd}'
+                     sh 'docker login -u $DOCKER_USER --p ${DOCKER_PASS}'
                      sh 'docker image push $DOCKER_USER/$APP_NAME:v1.$BUILD_ID'
                      sh 'docker image push $DOCKER_USER/$APP_NAME:latest'
                   }
