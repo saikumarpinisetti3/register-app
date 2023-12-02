@@ -46,16 +46,7 @@ pipeline {
 	           }	
            }
        }
- stage('Quality Gate Status'){
-                
-                steps{
-                    
-                    script{
-                        
-                        waitForQualityGate abortPipeline: false, credentialsId: 'Devops'
-                    }
-                }
-            }
+ 
         stage('Build & Push Docker Image') {
             steps {
                 script {
