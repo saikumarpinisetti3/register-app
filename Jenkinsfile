@@ -49,9 +49,11 @@ pipeline {
 
        stage('Quality Gate'){
            steps {
+		   withSonarQubeEnv('Devops'){
                script {
                     waitForQualityGate abortPipeline: false, credentialsId: 'Devops'
-                }	
+                }
+		   }
             }
 
         }
