@@ -7,7 +7,7 @@ pipeline {
             DOCKER_PASS = 'Supershot#143'
             IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
             IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-	    JENKINS_API_TOKEN = credentials("sonar-api")
+	    JENKINS_API_TOKEN = credentials("Devops")
     }
 	stages{
         stage('Checkout from SCM'){
@@ -61,8 +61,6 @@ pipeline {
                 script {
                     docker.withRegistry('',DOCKER_PASS) {
                         docker_image = docker.build "${IMAGE_NAME}"
-                    }
-
                     docker.withRegistry('',DOCKER_PASS) {
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
