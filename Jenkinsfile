@@ -50,6 +50,18 @@ pipeline {
             }
         }
 
+          stage('waitfor qualty gate) {
+    steps {
+        script {
+            withSonarQubeEnv('Devops') {
+                sh "mvn sonar:sonar"
+                // Assuming 'sonar:sonar' is the Maven goal for SonarQube analysis
+            }
+                waitForQualityGate abortPipeline: false, credentialsId: 'Devops'
+        }
+    }
+    }
+
         stage('Build Docker Image') {
             steps {
                 script {
