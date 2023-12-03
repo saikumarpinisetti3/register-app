@@ -1,102 +1,97 @@
 pipeline {
     agent any
+
     environment {
-	    APP_NAME = "register-app-pipeline"
-            RELEASE = "1.0.0"
-            DOCKER_USER = "saikumarpinisetti"
-            DOCKER_PASS = 'Supershot#143'
-            IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-	    JENKINS_API_TOKEN = credentials("Devops")
+        APP_NAME = "register-app-pipeline"
+        RELEASE = "1.0.0"
+        DOCKER_USER = "saikumarpinisetti"
+        DOCKER_PASS = 'Supershot#143'
+        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        JENKINS_API_TOKEN = credentials("Devops")
     }
-	stages{
-        stage('Checkout from SCM'){
-                steps {
+
+    stages {
+        stage('Checkout from SCM') {
+            steps {
+                script {
                     git branch: 'main', url: 'https://github.com/saikumarpinisetti3/register-app.git'
                 }
+            }
         }
 
-        stage('Build Application'){
+        stage('Build Application') {
             steps {
                 sh "mvn clean package"
             }
+        }
 
-       }
+        stage('Test Application') {
+            steps {
+                sh "mvn test"
+            }
+        }
 
-       stage('Test Application'){
-           steps {
-                 sh "mvn test"
-           }
-       }
-       stage('functional testing'){
-            steps{
-                script{
+        stage('Functional Testing') {
+            steps {
+                script {
                     sh "mvn verify"
                 }
             }
         }
 
-       stage('SonarQube Analysis'){
-           steps {
-	           script {
-		      withSonarQubeEnv(credentialsId: 'Devops') {
-    // some block
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv(credentialsId: 'Devops') {
                         sh "mvn sonar:sonar"
-		        }
-	           }	
-           }
-       }
- stage('Build Docker Image') {
-    steps {
-        script {
-	sh 'docker image build -t $APP_NAME:v1.$BUILD_ID .' 
-	 sh 'docker image tag $APP_NAME:v1.$BUILD_ID $DOCKER_USER/$APP_NAME:v1.$BUILD_ID'
-	sh 'docker image tag $APP_NAME:v1.$BUILD_ID $DOCKER_USER/$APP_NAME:latest'
-        }
-    }
-}
-	stage('Docker image push'){
-
-             steps{
-
-              script{
-                   withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                     
-                     sh 'docker login -u $DOCKER_USER -p ${DOCKER_PASS}'
-                     sh 'docker image push $DOCKER_USER/$APP_NAME:v1.$BUILD_ID'
-                     sh 'docker image push $DOCKER_USER/$APP_NAME:latest'
-                  }
+                    }
                 }
-             }
-        }      
+            }
+        }
 
-    //   stage('image scanning'){
-        //    steps{
-          //      script{
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker image build -t ${APP_NAME}:${IMAGE_TAG} ."
+                    sh "docker image tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}"
+                    sh "docker image tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_USER}/${APP_NAME}:latest"
+                }
+            }
+        }
 
-      //             sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ashfaque9x/register-app-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > ss.txt'
-                  // sh 'cat ss.txt'
-        //        }
-         //   }
-     //   }
+        stage('Docker image push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+                        sh "docker image push $DOCKER_USER/$APP_NAME:$IMAGE_TAG"
+                        sh "docker image push $DOCKER_USER/$APP_NAME:latest"
+                    }
+                }
+            }
+        }
 
-       stage ('Cleanup Artifacts') {
-           steps {
-               script {
+        stage('Cleanup Artifacts') {
+            steps {
+                script {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker rmi ${IMAGE_NAME}:latest"
-               }
-          }
-		stage("Update the Deployment Tags") {
+                }
+            }
+        }
+
+        stage("Update the Deployment Tags") {
             steps {
                 sh """
                    cat deployment.yaml
-                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+                   sed -i 's|${APP_NAME}.*|${APP_NAME}:${IMAGE_TAG}|g' deployment.yaml
                    cat deployment.yaml
                 """
             }
         }
-			stage("Push the changed deployment file to Git") {
+
+        stage("Push the changed deployment file to Git") {
             steps {
                 sh """
                    git config --global user.name "saikumarpinisetti3"
@@ -105,9 +100,9 @@ pipeline {
                    git commit -m "Updated Deployment Manifest"
                 """
                 withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'pass', usernameVariable: 'user')]){
-                  sh "git push https://github.com/saikumarpinisetti3/register-app main"
+                    sh "git push https://github.com/saikumarpinisetti3/register-app main"
                 }
             }
-			}	
-			}
+        }
+    }
 }
