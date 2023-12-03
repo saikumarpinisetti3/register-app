@@ -50,7 +50,7 @@ pipeline {
             }
         }
 
-          stage('waitfor qualty gate) {
+          stage('waitfor qualty gate') {
     steps {
         script {
             withSonarQubeEnv('Devops') {
