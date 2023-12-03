@@ -94,6 +94,8 @@ pipeline {
         stage("Push the changed deployment file to Git") {
             steps {
                 sh """
+                    git remote set-url origin git@github.com:saikumarpinisetti3/register-app.git
+
                    git config --global user.name "saikumarpinisetti3"
                    git config --global user.email "saikumarpinisetti3@gmail.com"
                    git add deployment.yaml
