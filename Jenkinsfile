@@ -87,12 +87,6 @@ pipeline {
                     sh "docker rmi ${IMAGE_NAME}:latest"
                }
           }
-            }
-        stage('Checkout from SCM'){
-                steps {
-                    git branch: 'main', url: 'https://github.com/saikumarpinisetti3/register-app.git'
-                }
-        }
 		stage("Update the Deployment Tags") {
             steps {
                 sh """
