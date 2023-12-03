@@ -70,15 +70,15 @@ pipeline {
              }
         }      
 
-       stage('image scanning'){
-            steps{
-                script{
+    //   stage('image scanning'){
+        //    steps{
+          //      script{
 
-                   sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ashfaque9x/register-app-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > ss.txt'
+      //             sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ashfaque9x/register-app-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > ss.txt'
                    sh 'cat ss.txt'
-                }
-            }
-        }
+        //        }
+         //   }
+     //   }
 
        stage ('Cleanup Artifacts') {
            steps {
@@ -88,5 +88,33 @@ pipeline {
                }
           }
             }
+		stages{
+        stage('Checkout from SCM'){
+                steps {
+                    git branch: 'main', url: 'https://github.com/saikumarpinisetti3/register-app.git'
+                }
+        }
+		stage("Update the Deployment Tags") {
+            steps {
+                sh """
+                   cat deployment.yaml
+                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+                   cat deployment.yaml
+                """
+            }
+        }
+			stage("Push the changed deployment file to Git") {
+            steps {
+                sh """
+                   git config --global user.name "saikumarpinisetti3"
+                   git config --global user.email "saikumarpinisetti3@gmail.com"
+                   git add deployment.yaml
+                   git commit -m "Updated Deployment Manifest"
+                """
+                withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'pass', usernameVariable: 'user')]){
+                  sh "git push https://github.com/saikumarpinisetti3/register-app main"
+                }
+            }
+        }
        }
 }
