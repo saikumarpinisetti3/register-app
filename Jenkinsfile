@@ -88,7 +88,6 @@ pipeline {
                }
           }
             }
-		stages{
         stage('Checkout from SCM'){
                 steps {
                     git branch: 'main', url: 'https://github.com/saikumarpinisetti3/register-app.git'
@@ -115,6 +114,6 @@ pipeline {
                   sh "git push https://github.com/saikumarpinisetti3/register-app main"
                 }
             }
-        }
-       }
+			}	
+			}
 }
