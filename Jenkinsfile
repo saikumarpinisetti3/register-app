@@ -44,9 +44,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv(credentialsId: 'Devops') {
-                        sh "mvn sonar:sonar"
-                        waitForQualityGate abortPipeline: false, credentialsId: 'Devops'
-                    }
+                        sh "mvn sonar:sonar"                    }
                 }
             }
         }
@@ -54,10 +52,8 @@ pipeline {
          stage("Quality Gate") {
     steps {
         script {
-            withSonarQubeEnv(credentialsId: 'sonarapi') {
                 waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api'
             }
-        }
     }
 }
 
